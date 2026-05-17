@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-ajudante
+spec:
+  volumes:
+    - name: pasta-compartilhada
+      persistentVolumeClaim:
+        claimName: spark-pvc # Conecta no contrato que já está 'Bound'
+  containers:
+    - name: alpine
+      image: alpine:latest # Uma imagem Linux super leve (cerca de 5MB)
+      command: ["tail", "-f", "/dev/null"] # Esse comando serve apenas para manter o pod ligado e esperando
+      volumeMounts:
+        - name: pasta-compartilhada
+          mountPath: /dados # Dentro do container, a pasta vai se chamar /dados

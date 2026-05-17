@@ -1,0 +1,37 @@
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: processar-residuos-job
+  namespace: default
+spec:
+  type: Python
+  mode: cluster
+  image: "spark:3.4.1"
+  imagePullPolicy: IfNotPresent
+  mainApplicationFile: "local:///dados/processamento.py"
+  sparkVersion: "3.4.1" # <--- Linha removida daqui!
+  restartPolicy:
+    type: Never
+  volumes:
+    - name: spark-storage
+      persistentVolumeClaim:
+        claimName: spark-pvc
+  driver:
+    cores: 1
+    coreLimit: "1200m"
+    memory: "512m"
+    serviceAccount: cracha-gerenciador-pods # <--- LUGAR CORRETO: O crachá fica com o Driver!
+    labels:
+      version: 3.4.1
+    volumeMounts:
+      - name: spark-storage
+        mountPath: /dados
+  executor:
+    cores: 1
+    instances: 1
+    memory: "512m"
+    labels:
+      version: 3.4.1
+    volumeMounts:
+      - name: spark-storage
+        mountPath: /dados

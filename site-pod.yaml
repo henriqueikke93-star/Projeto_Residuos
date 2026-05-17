@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: painel-residuos-site
+  labels:
+    app: painel-site
+spec:
+  volumes:
+    - name: pasta-compartilhada
+      persistentVolumeClaim:
+        claimName: spark-pvc # Conecta no mesmo PVC onde o Spark salvou o resultado!
+  containers:
+    - name: web-app
+      image: "python:3.11-slim" # Imagem oficial do Python super leve
+      command: ["/bin/sh", "/dados/inicializar.sh"] # Executa nosso script de largada
+      ports:
+        - containerPort: 8501 # Porta padrão que o Streamlit usa
+      volumeMounts:
+        - name: pasta-compartilhada
+          mountPath: /dados # O CSV gerado pelo Spark estará visível aqui em /dados/resultado_processado
